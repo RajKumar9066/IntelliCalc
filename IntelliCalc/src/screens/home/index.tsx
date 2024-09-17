@@ -6,7 +6,8 @@ export default function Home() {
 
     useEffect(() => {
         const canvas = canvasRef.current;
-
+         
+            
         if(canvas){
             const ctx = canvas.getContext('2d');
             if(ctx){
@@ -27,6 +28,7 @@ export default function Home() {
             if(ctx){
                 ctx.beginPath();
                 ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                setIsDrawing(true);
             }
         }
     }
@@ -59,6 +61,7 @@ export default function Home() {
             onMouseDown={startDrawing}
             onMouseOut={stopDrawing}
             onMouseUp={stopDrawing}
+            onMouseMove={draw}
             />
             </>
         )
