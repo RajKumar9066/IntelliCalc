@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState } from "react";
-import {SWATCHES} from '@/constants';
-import {colorSwatch, Group} from '@mantine/core';
-import {Button} from '@/components/ui/button';
+import {SWATCHES} from '../../../constants'
+import { ColorSwatch, Group } from '@mantine/core';
+import {Button} from '../../components/ui/button';
 import axios from 'axios';
 
 interface  Response {
@@ -23,12 +23,12 @@ export default function Home() {
     const [reset, setRest] = useState(false);
     const [result, setResult] = useState<GenerateResult>();
     const [dictOfVars, setDictOfVars] = useState({});
-
+    
 
     useEffect(() => {
         if(reset){
             resetCanvas();
-            setReset(false);
+            setRest(false);
         }
     }, [reset]);
 
@@ -123,7 +123,7 @@ export default function Home() {
                         </Button>
                         <Group className='z-20'>
                             {SWATCHES.map((swatchColor: string) =>(
-                                <colorSwatch
+                                <ColorSwatch
                                     key={swatchColor}
                                     color={swatchColor}
                                     onClick={() => setColor(swatchColor)}
