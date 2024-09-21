@@ -7,7 +7,7 @@ import axios from 'axios';
 interface  Response {
     expr : string;
     result: string;
-    assigh: boolean;
+    assign: boolean;
 }
 
 interface GenerateResult {
@@ -46,12 +46,10 @@ export default function Home() {
 
     useEffect(() => {
         const canvas = canvasRef.current;
-         
-            
         if(canvas){
             const ctx = canvas.getContext('2d');
             if(ctx){
-                canvas.width = window.innerHeight;
+                canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight-canvas.offsetTop;
                 ctx.lineCap = 'round';
                 ctx.lineWidth = 3;
@@ -111,11 +109,11 @@ export default function Home() {
     };
 
         return (
-            <>
-                <div className='grid grid-cols-3 gap-2'>
+            <div className="container flex flex-col items-center">
+                <div className='controls flex justify-between items-center w-full mb-4 mt-4'>
                     <Button
                         onClick={() => setRest(true)}
-                        className='z-20 bg-black text-white'
+                        className='bg-black text-white '
                         variant='default'
                         color='black'
                         >
@@ -132,22 +130,22 @@ export default function Home() {
                         </Group>
                         <Button
                         onClick= {sendData}
-                        className='z-20 bg-black text-white'
+                        className='bg-black text-white'
                         variant='default'
                         color='black'
                         >
                             Calculate
                         </Button>
                 </div>
-            <canvas
-            ref = {canvasRef}
-            id = 'canvas'
-            className='absolute top-0 left-0 w-full h-full'
-            onMouseDown={startDrawing}
-            onMouseOut={stopDrawing}
-            onMouseUp={stopDrawing}
-            onMouseMove={draw}
-            />
-            </>
+                <canvas
+                ref = {canvasRef}
+                // id = 'canvas'
+                className='canvas border border-black w-full mb-1'
+                onMouseDown={startDrawing}
+                onMouseOut={stopDrawing}
+                onMouseUp={stopDrawing}
+                onMouseMove={draw}
+                />
+            </div>
         )
     };
