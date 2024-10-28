@@ -1,7 +1,7 @@
 # IntelliCalc
 # AI-Powered Calculator App
 
-![Demo Video](path/to/your/banner/image.png)
+![Demo Video](./IntelliCalc/public/demo%20video.mp4)
 
 ## Table of Contents
 
