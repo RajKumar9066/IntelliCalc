@@ -1,9 +1,18 @@
+/// <reference types="vite/client" />
 import { ColorSwatch, Group } from '@mantine/core';
 import { Button } from '../../components/ui/button'; //@/components/ui/button
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Draggable from 'react-draggable';
 import {SWATCHES} from '../../constants';
+import React from 'react';
+
+// Extend the Window interface to include MathJax
+declare global {
+    interface Window {
+        MathJax: any;
+    }
+}
 // import {LazyBrush} from 'lazy-brush';
 
 interface GeneratedResult {
@@ -202,7 +211,7 @@ export default function Home() {
             <div className='grid grid-cols-3 gap-2'>
                 <Button
                     onClick={() => setReset(true)}
-                    className='z-20 bg-black text-white'
+                    className="z-20 bg-red-500 text-white w-36 p-4 ml-56"
                     variant='default' 
                     color='black'
                 >
@@ -215,11 +224,11 @@ export default function Home() {
                 </Group>
                 <Button
                     onClick={runRoute}
-                    className='z-20 bg-black text-white'
+                    className="z-20 bg-green-400 text-white w-36 pr-4"
                     variant='default'
                     color='white'
                 >
-                    Run
+                    Calculate
                 </Button>
             </div>
             <canvas
