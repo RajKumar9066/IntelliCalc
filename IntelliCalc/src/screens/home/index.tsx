@@ -7,14 +7,14 @@ import Draggable from 'react-draggable';
 import {SWATCHES} from '../../constants';
 import React from 'react';
 
-// Extend the Window interface to include MathJax
+// Extend the Window interface to include MathJax for LaTeX rendering
 declare global {
     interface Window {
         MathJax: any;
     }
 }
-// import {LazyBrush} from 'lazy-brush';
 
+// Define interfaces for response objects
 interface GeneratedResult {
     expression: string;
     answer: string;
@@ -27,7 +27,10 @@ interface Response {
 }
 
 export default function Home() {
+    // Reference for the canvas element
     const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // States to manage drawing, color, reset status, variable storage, results, and LaTeX display
     const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('rgb(255, 255, 255)');
     const [reset, setReset] = useState(false);
@@ -36,12 +39,7 @@ export default function Home() {
     const [latexPosition, setLatexPosition] = useState({ x: 10, y: 200 });
     const [latexExpression, setLatexExpression] = useState<Array<string>>([]);
 
-    // const lazyBrush = new LazyBrush({
-    //     radius: 10,
-    //     enabled: true,
-    //     initialPoint: { x: 0, y: 0 },
-    // });
-
+    // Load MathJax library to render LaTeX expressions
     useEffect(() => {
         if (latexExpression.length > 0 && window.MathJax) {
             setTimeout(() => {
@@ -50,12 +48,14 @@ export default function Home() {
         }
     }, [latexExpression]);
 
+    // Render LaTeX to canvas when result updates
     useEffect(() => {
         if (result) {
             renderLatexToCanvas(result.expression, result.answer);
         }
     }, [result]);
 
+    // Reset canvas and state variables when `reset` changes
     useEffect(() => {
         if (reset) {
             resetCanvas();
@@ -66,19 +66,22 @@ export default function Home() {
         }
     }, [reset]);
 
+    // Initialize canvas and MathJax on component mount
     useEffect(() => {
         const canvas = canvasRef.current;
-    
+
         if (canvas) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
+                // Set canvas size and line properties
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight - canvas.offsetTop;
                 ctx.lineCap = 'round';
                 ctx.lineWidth = 3;
             }
-
         }
+
+        // Load MathJax script for rendering LaTeX expressions
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML';
         script.async = true;
@@ -90,12 +93,14 @@ export default function Home() {
             });
         };
 
+        // Clean up the script on unmount
         return () => {
             document.head.removeChild(script);
         };
 
     }, []);
 
+    // Render LaTeX expression on canvas
     const renderLatexToCanvas = (expression: string, answer: string) => {
         const latex = `\\(\\LARGE{${expression} = ${answer}}\\)`;
         setLatexExpression([...latexExpression, latex]);
@@ -110,7 +115,7 @@ export default function Home() {
         }
     };
 
-
+    // Clear canvas
     const resetCanvas = () => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -121,6 +126,7 @@ export default function Home() {
         }
     };
 
+    // Begin drawing on canvas
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -133,6 +139,8 @@ export default function Home() {
             }
         }
     };
+
+    // Draw lines on the canvas while mouse is moving
     const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!isDrawing) {
             return;
@@ -147,13 +155,16 @@ export default function Home() {
             }
         }
     };
+
+    // Stop drawing when mouse is released or moved out
     const stopDrawing = () => {
         setIsDrawing(false);
     };  
 
+    // Send canvas data to server to perform calculations and process response
     const runRoute = async () => {
         const canvas = canvasRef.current;
-    
+
         if (canvas) {
             const response = await axios({
                 method: 'post',
@@ -166,15 +177,18 @@ export default function Home() {
 
             const resp = await response.data;
             console.log('Response', resp);
+
+            // Update variables dictionary with server response
             resp.data.forEach((data: Response) => {
                 if (data.assign === true) {
-                    // dict_of_vars[resp.result] = resp.answer;
                     setDictOfVars({
                         ...dictOfVars,
                         [data.expr]: data.result
                     });
                 }
             });
+
+            // Calculate bounding box for the drawn content to position LaTeX
             const ctx = canvas.getContext('2d');
             const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
             let minX = canvas.width, minY = canvas.height, maxX = 0, maxY = 0;
@@ -191,6 +205,7 @@ export default function Home() {
                 }
             }
 
+            // Set position to display LaTeX centered over drawn content
             const centerX = (minX + maxX) / 2;
             const centerY = (minY + maxY) / 2;
 
@@ -208,6 +223,7 @@ export default function Home() {
 
     return (
         <>
+            {/* UI buttons for resetting and calculating */}
             <div className='grid grid-cols-3 gap-2'>
                 <Button
                     onClick={() => setReset(true)}
@@ -231,6 +247,8 @@ export default function Home() {
                     Calculate
                 </Button>
             </div>
+
+            {/* Canvas for drawing */}
             <canvas
                 ref={canvasRef}
                 id='canvas'
@@ -241,6 +259,7 @@ export default function Home() {
                 onMouseOut={stopDrawing}
             />
 
+            {/* Display LaTeX expressions using Draggable for repositioning */}
             {latexExpression && latexExpression.map((latex, index) => (
                 <Draggable
                     key={index}
